@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NixieClock</title>
+</head>
+<body>
+    <h>Nixie.</h>
+    <form id="sample-form" method="post" action="/rest/save_wifi_cred">
+      <h1>WiFi configuration</h1>
+      <section>
+        <p>
+          <label for="ssid">
+            <span>SSID: </span>
+        </label>
+        <input type="text" id="ssid" name="ssid" />
+    </p>
+    <p>
+      <label for="password">
+        <span>Password: </span>
+    </label>
+    <input type="text" id="password" name="password" />
+</p>
+<p><button type="submit">Save</button></p>
+</section>
+</form>
+<script src="script/s.js"></script>
+</body>
+</html>
