@@ -20,7 +20,7 @@ void setup() {
   //Web server stuff:
   server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html");
   server.addHandler(new ScanRequestHandler("/rest/scan")).setFilter(ON_AP_FILTER);  //only when requested from AP
-  server.addHandler(new StoreWifiRequestHandler("/rest/save_wifi_cred"));
+  server.addHandler(new StoreWifiRequestHandler("/rest/wifi_cred"));
 
   //everything else goes to captive portal:
   server.addHandler(new CaptiveRequestHandler("/index.html")).setFilter(ON_AP_FILTER);  //only when requested from AP
