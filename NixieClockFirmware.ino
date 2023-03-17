@@ -11,25 +11,23 @@ AsyncWebServer server(80);
 
 
 
-void setup(){
+void setup() {
   SPIFFS.begin();
   Serial.begin(115200);
-  //your other setup stuff...
   WiFi.softAP("Nixie Clock");
   dnsServer.start(53, "*", WiFi.softAPIP());
+
+  //Web server stuff:
   server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html");
-  server.addHandler(new ScanRequestHandler("/rest/scan")).setFilter(ON_AP_FILTER);//only when requested from AP
+  server.addHandler(new ScanRequestHandler("/rest/scan")).setFilter(ON_AP_FILTER);  //only when requested from AP
   server.addHandler(new StoreWifiRequestHandler("/rest/save_wifi_cred"));
 
   //everything else goes to captive portal:
-  server.addHandler(new CaptiveRequestHandler("/index.html")).setFilter(ON_AP_FILTER);//only when requested from AP
-  
-
-  //more handlers...
+  server.addHandler(new CaptiveRequestHandler("/index.html")).setFilter(ON_AP_FILTER);  //only when requested from AP
   server.begin();
   Serial.println(WiFi.softAPIP());
 }
 
-void loop(){
+void loop() {
   dnsServer.processNextRequest();
 }
