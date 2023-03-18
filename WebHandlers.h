@@ -1,3 +1,6 @@
+#ifndef WEB_HANDLERS_H
+#define WEB_HANDLERS_H
+
 #include <WiFi.h>
 #include <AsyncJson.h>
 #include <AsyncTCP.h>
@@ -133,3 +136,5 @@ class WiFiStatusRequestHandler : public AsyncWebHandler {
       request->send(response);
     }
 };
+
+#endif //WEB_HANDLERS_H

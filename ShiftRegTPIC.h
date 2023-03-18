@@ -1,3 +1,6 @@
+#ifndef SHIFT_REG_TPIC_H
+#define SHIFT_REG_TPIC_H
+
 #include "driver/spi_master.h"
 
 template<uint8_t numRegs>
@@ -32,7 +35,7 @@ class ShiftRegTPIC {
     }
 
     void setSingle(uint8_t globalPin ,bool val){
-      setSingle(globalPin/8, globalPin % 8);
+      setSingle(globalPin/8, globalPin % 8,val);
     }
 
 
@@ -86,3 +89,5 @@ class ShiftRegTPIC {
     spi_device_handle_t spi;
     uint8_t digitalValues[numRegs];
 };
+
+#endif //SHIFT_REG_TPIC_H

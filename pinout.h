@@ -1,3 +1,6 @@
+#ifndef PINOUT_H
+#define PINOUT_H
+
 //for RTC:
 #define I2C_SCL 22
 #define I2C_SDA 21
@@ -8,3 +11,5 @@
 #define TPIC_LATCH 15
 #define TPIC_CLR 16
 #define TPIC_G 17
+
+#endif //PINOUT_H

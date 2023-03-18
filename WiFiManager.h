@@ -1,3 +1,6 @@
+#ifndef WIFI_MANAGER_H
+#define WIFI_MANAGER_H
+
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <DNSServer.h>
@@ -165,3 +168,5 @@ WiFiManager::WiFiCred WiFiManager::cred{};
 bool WiFiManager::sApActive{false};
 const uint64_t WiFiManager::aApLifetme_us{60000000};
 uint64_t WiFiManager::aApCloseRequestTime_us{0};
+
+#endif //WIFI_MANAGER_H
