@@ -38,11 +38,7 @@ sampleForm.addEventListener("submit", async (e) => {
     /**
      * The `postFormFieldsAsJson()` function in the next step.
      */
-    let responseData = await postFormFieldsAsJson({ url, formData });
-
-
-    //Display the response data in the console (for debugging)
-    console.log(responseData);
+    await postFormFieldsAsJson({ url, formData });
   } catch (error) {
     //If an error occurs display it in the console (for debugging)
     console.error(error);
@@ -80,6 +76,6 @@ async function postFormFieldsAsJson({ url, formData }) {
     let error = await res.text();
     throw new Error(error);
   }
-  //If the response was OK, return the response body.
-  return res.json();
+  console.log(res);
+  console.log(res.json())
 }

@@ -41,7 +41,7 @@ Body:
 ```json
 {
 	"status": true,
-	"message": ""
+	"message": "Connecting to network..."
 }
 ```
 ### Error response
