@@ -62,6 +62,7 @@ class WiFiManager {
       return true;
     }
     static void StartAP() {
+      WiFi.mode(WIFI_AP_STA);
       WiFi.softAP("Nixie Clock");
       dns.start(53, "*", WiFi.softAPIP());
       Serial.print("NixieClock is available at ");
@@ -73,6 +74,7 @@ class WiFiManager {
       Serial.println("Switching softAP OFF...");
       WiFi.softAPdisconnect(true);
       sApActive = false;
+      WiFi.mode(WIFI_STA);
     }
 
     bool startSta() {
