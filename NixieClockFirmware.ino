@@ -5,11 +5,14 @@
 #include "AsyncJson.h"
 #include <SPIFFS.h>
 #include "WebHandlers.h"
+#include "pinout.h"
+#include "ShiftRegTPIC.h"
+
 
 //DNSServer dnsServer;
 AsyncWebServer server(80);
 
-
+ShiftRegTPIC<8> reg(TPIC_MOSI,TPIC_CLK,TPIC_LATCH,TPIC_CLR,TPIC_G);
 
 void setup() {
   SPIFFS.begin();
