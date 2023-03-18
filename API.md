@@ -1,3 +1,4 @@
+
 # API
 This page describes NixieClock REST API
 ## WiFi scan
@@ -53,3 +54,47 @@ Body:
 	"message": "eror description"
 }
 ```
+
+## WiFi status
+**URI**: `/rest/wifi_status`
+**Method**: `GET`
+### Success response
+**Code**: `200`
+#### Content example:
+```json
+{
+	"client": {
+		"status": 3,
+		"ssid": "Livebox-8EA0",
+		"rssi": -53,
+		"ip": "192.168.1.16"
+	},
+	"ap": {
+		"status": 0,
+		"ssid": "",
+		"clients": 0,
+		"lifetime": -1
+	}
+}
+```
+where:
+* `"client.status"`:
+
+|Value|              Meaning                  |
+|:---:|---------------------------------------|
+|  0  | temporary status during configuration |
+|  1  | when no SSID is available             |
+|  2  | network scan scan is complete         |
+|  3  | **connected to a WiFi network**       |
+|  4  | the connection fails for all attempts |
+|  5  | the connection is lost                |
+|  6  | disconnected from a network           |
+
+* `ap.status`:
+
+|Value|              Meaning                  |
+|:---:|---------------------------------------|
+|  0  | inactive                              |
+|  1  | active                                |
+
+* `ap.lifetime`: time for which the AP will stay ON, after that it will be switched OFF

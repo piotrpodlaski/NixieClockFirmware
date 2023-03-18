@@ -9,7 +9,7 @@ class WiFiManager {
       String pass;
     };
     static void Begin() {
-      WiFi.mode(WIFI_AP_STA);
+      WiFi.mode(WIFI_STA);
       //start the scan right away:
       WiFi.scanNetworks(true);
       xTaskCreate(WiFiManager::WiFiTask, "WiFiManagerTast", 10 * 8192, NULL, 1, NULL);
