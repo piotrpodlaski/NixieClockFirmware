@@ -28,7 +28,7 @@ When scan did not yet finish, or nothing was found the response will return empt
 ## WiFi credentials storage
 **URI**: `/rest/wifi_cred`
 **Method**: `POST`
-### Data example
+### `POST` data example
 WiFi credentials of the selected network:
 ```json
 {
@@ -98,3 +98,65 @@ where:
 |  1  | active                                |
 
 * `ap.lifetime`: time for which the AP will stay ON, after that it will be switched OFF
+
+## Brightness control
+
+**URI**: `/rest/bright`
+**Method**: `GET` `POST`
+### Success response
+**Code**: `200`
+
+#### Content example:
+```json
+{
+	"minBright": 0.5,
+	"maxBright": 1,
+	"photoMin": 1000,
+	"photoMax": 4095,
+	"isFixed": true,
+	"fixedBr": 0.1,
+	"photoRead": 0,
+	"currentBr": 1
+}
+```
+where:
+* `"minBright"` - `float` maximal allowed nixie brightness, ignored when `isFixed=true` (0-1)
+* `"maxBright"` - `float` minimal allowed nixie brightness, ignored when `isFixed=true` (0-1)
+* `"photoMin"` - `int` minimal reading of photo resistor ADC taken for brightness regulation, ignored when `isFixed=true` (0-4095)
+* `"photoMax"` - `int` maximal reading of photo resistor ADC taken for brightness regulation, ignored when `isFixed=true` (0-4095)
+* `"isFixed"` - `bool` control switch to set fixed or variable brightness
+* `"fixedBr"` - `float` fixed nixie brightness, ignored when `isFixed=false` (0-1)
+* `"photoRead"` - `int` raw photo resistor ADC reading (0-4095)
+* `"currentBr"` - `float` current nixie brightness
+
+### Error response
+**Code**: `400`
+#### Content example:
+```json
+{
+	"message": "error description",
+	"minBright": 0.5,
+	"maxBright": 1,
+	"photoMin": 1000,
+	"photoMax": 4095,
+	"isFixed": true,
+	"fixedBr": 0.1,
+	"photoRead": 0,
+	"currentBr": 1
+}
+```
+fields are the same as in case of normal response, additional `"message"` field is added with description of the failure.
+
+### `POST` data example
+
+```json
+{
+	"minBright": 0.5,
+	"maxBright": 1,
+	"photoMin": 1000,
+	"photoMax": 4095,
+	"isFixed": true,
+	"fixedBr": 0.1
+}
+```
+Fields descriptions are the same as in case of the normal response description. All the parameters will be stored in non-volatile memory on the clock. 

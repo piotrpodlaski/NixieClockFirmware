@@ -48,6 +48,19 @@ class WiFiManager {
       return hasSsid && hasPass;
     }
 
+    static bool ValidateJson(const JsonVariant& json, std::vector<String> keys, String* msg = nullptr) {
+
+      bool isGood = true;
+      for(const auto & key : keys){
+        if(!json.containsKey(key)){
+          isGood=false;
+          if(msg)
+            *msg+=" "+key;
+        }
+      }
+      return isGood;
+    }
+
     static bool ReadCredFromFile() {
       auto f = SPIFFS.open(configFile, FILE_READ);
       if (!f) Serial.println(F("Failed to open WiFi config file!"));

@@ -12,6 +12,7 @@
 AsyncWebServer server(80);
 NixieController<ENumberOfLamps::eFour,8> nc;
 TimeManager timeMan("pool.ntp.org");
+BrightnessConfig bc;
 
 void setup() {
   SPIFFS.begin();
@@ -26,6 +27,7 @@ void setup() {
   server.addHandler(new ScanRequestHandler("/rest/scan"));
   server.addHandler(new StoreWifiRequestHandler("/rest/wifi_cred"));
   server.addHandler(new WiFiStatusRequestHandler("/rest/wifi_status"));
+  server.addHandler(new BrightRequestHandler("/rest/bright",bc));
 
 
   //everything else goes to captive portal:
@@ -39,9 +41,5 @@ void setup() {
 
 void loop() {
 
-  nc.displayTime(timeMan.getTime());
 
-  Serial.println(timeMan.printLocalTime());
-  Serial.println();
-  delay(2000);
 }

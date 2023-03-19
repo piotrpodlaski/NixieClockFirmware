@@ -1,0 +1,8 @@
+{
+	"minBright": 0.5,
+	"maxBright": 1,
+	"photoMin": 1000,
+	"photoMax": 4095,
+	"isFixed": true,
+	"fixedBr": 1
+}
