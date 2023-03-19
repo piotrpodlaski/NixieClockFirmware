@@ -12,4 +12,8 @@
 #define TPIC_CLR 16
 #define TPIC_G 17
 
+#define R_PHOTO 33
+
+#define DIMMING 14
+
 #endif //PINOUT_H

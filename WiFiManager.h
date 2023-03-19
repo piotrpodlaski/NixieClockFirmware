@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <DNSServer.h>
+#include "TimeManager.h"
 
 class WiFiManager {
   public:
@@ -121,6 +122,9 @@ class WiFiManager {
               Serial.printf("AP will stop in %.1f seconds\n", aApLifetme_us / (1e6));
               aApCloseRequestTime_us = esp_timer_get_time();
             }
+            //we have access to WiFi! sync ntp!
+            if(timeMan)
+              timeMan->syncTimeNTP();
           }
 
           startStaReq = false;
@@ -146,8 +150,13 @@ class WiFiManager {
       return std::max(lt / 1000, 0LL);
     }
 
+    static void SetTimeManagerPointer(TimeManager* man){
+      timeMan=man;
+    }
+
     static DNSServer dns;
     static const String apSsid;
+    
   private:
     static const String configFile;
     static const unsigned int connTimeout;
@@ -156,6 +165,7 @@ class WiFiManager {
     static bool sApActive;
     static const uint64_t aApLifetme_us;
     static uint64_t aApCloseRequestTime_us;
+    static TimeManager* timeMan;
 
 };
 
@@ -168,5 +178,6 @@ WiFiManager::WiFiCred WiFiManager::cred{};
 bool WiFiManager::sApActive{false};
 const uint64_t WiFiManager::aApLifetme_us{60000000};
 uint64_t WiFiManager::aApCloseRequestTime_us{0};
+TimeManager* WiFiManager::timeMan{nullptr};
 
 #endif //WIFI_MANAGER_H
