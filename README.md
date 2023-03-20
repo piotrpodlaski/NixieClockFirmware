@@ -14,7 +14,12 @@ Download following `.zip` archives:
 * [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer/archive/refs/heads/master.zip)
 * [AsyncTCP](https://github.com/me-no-dev/AsyncTCP/archive/refs/heads/master.zip)
 
-After opening `NixieClockFirmware.ino` execute `Sketch`&rarr;`Include Library`&rarr;`Add .ZIP Library...`
+After opening `NixieClockFirmware.ino` execute `Sketch`&rarr;`Include Library`&rarr;`Add .ZIP Library...` for all the downloaded `.zip` files
+
+###  Libraries listed in Arduino registry:
+Run `Tools`&rarr;`ESP32 Sketch Data Upload` and install:
+* `ArduinoJson` by Benoît Blanchon
+
 
 # Build and Run
 Before build, select correct board: `Tools`&rarr;`Board`&rarr;`ESP32 Arduino`&rarr;`ESP32DevModule`
