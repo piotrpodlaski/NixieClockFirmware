@@ -3,8 +3,11 @@
 This page describes NixieClock REST API
 ## WiFi scan
 Get information on available WiFi networks
+
 **URI**: `/rest/scan`
+
 **Method**: `GET`
+
 ### Success response
 **Code**: `200`
 #### Content example:
@@ -26,8 +29,11 @@ When two networks are detected the outout may look like:
 When scan did not yet finish, or nothing was found the response will return empty array `[]`
 
 ## WiFi credentials storage
+
 **URI**: `/rest/wifi_cred`
+
 **Method**: `POST`
+
 ### `POST` data example
 WiFi credentials of the selected network:
 ```json
@@ -37,7 +43,9 @@ WiFi credentials of the selected network:
 }
 ```
 ### Success response
+
 **Code**: `200`
+
 Body:
 ```json
 {
@@ -46,7 +54,9 @@ Body:
 }
 ```
 ### Error response
+
 **Code**: `400`
+
 Body:
 ```json
 {
@@ -56,10 +66,15 @@ Body:
 ```
 
 ## WiFi status
+
 **URI**: `/rest/wifi_status`
+
 **Method**: `GET`
+
 ### Success response
+
 **Code**: `200`
+
 #### Content example:
 ```json
 {
@@ -102,8 +117,11 @@ where:
 ## Brightness control
 
 **URI**: `/rest/bright`
+
 **Method**: `GET` `POST`
+
 ### Success response
+
 **Code**: `200`
 
 #### Content example:
@@ -130,7 +148,9 @@ where:
 * `"currentBr"` - `float` current nixie brightness
 
 ### Error response
+
 **Code**: `400`
+
 #### Content example:
 ```json
 {
