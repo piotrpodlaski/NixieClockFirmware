@@ -1,11 +1,12 @@
 #ifndef NIXIE_CONTROLLER_H
 #define NIXIE_CONTROLLER_H
 
+#include <sys/time.h>
 #include "pinout.h"
 #include "mapping.h"
 #include "ShiftRegTPIC.h"
 #include "CommonStructs.h"
-#include <sys/time.h>
+
 
 enum class ENumberOfLamps : uint8_t {
   eFour = 4,
@@ -100,8 +101,19 @@ class NixieController {
       ledcWrite(pwmLedcChannwel, duty);
     }
 
+    void setNeonTubes(bool state) {
+      if (neonTubeState==state) return;
+      for (auto pin : *nTubes) {
+        reg.setSingle(pin, state);
+      }
+      neonTubeState=state;
+      reg.updateRegisters();
+    }
 
-    private:
+    bool displayIp(IPAddress ip) { return false;}
+
+
+  private:
 
     void initAdcPwm() {
       ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
@@ -115,14 +127,13 @@ class NixieController {
     mapping::neonMap_t* nTubes{nullptr};
     ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
     const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
-                           uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
-                           int lastDisplayedNumber{0};
+    uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
+    int lastDisplayedNumber{0};
+    bool neonTubeState;
     const int rPhotoPin{R_PHOTO};
     const int pwmPin{DIMMING};
     const int nBits{12}; //number of bits for PWM and ADC
-    const int pwmLedcChannwel {
-      0
-    };
+    const int pwmLedcChannwel{0};
     const int pwmFreq{100};
     const int pwmMaxVal{(1U << nBits) - 1};
 };

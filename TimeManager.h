@@ -2,7 +2,7 @@
 #define TIME_MANAGER_H
 
 #include <sys/time.h>
-#include "time.h"
+#include <time.h>
 
 class TimeManager {
   public:
@@ -18,6 +18,12 @@ class TimeManager {
       struct tm timeinfo;
       getLocalTime(&timeinfo);
       return timeinfo;
+    }
+
+    uint16_t getMs() {
+      struct timeval tv_now;
+      gettimeofday(&tv_now, NULL);
+      return tv_now.tv_usec/1000;
     }
 
     void syncTimeRTC() {

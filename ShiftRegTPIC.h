@@ -1,7 +1,7 @@
 #ifndef SHIFT_REG_TPIC_H
 #define SHIFT_REG_TPIC_H
 
-#include "driver/spi_master.h"
+#include <driver/spi_master.h>
 
 template<uint8_t numRegs>
 class ShiftRegTPIC {

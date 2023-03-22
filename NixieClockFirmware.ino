@@ -1,32 +1,64 @@
-#include <DNSServer.h>
 #include <WiFi.h>
 #include <AsyncTCP.h>
-#include "ESPAsyncWebServer.h"
-#include "AsyncJson.h"
+#include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include "WebHandlers.h"
 #include "NixieController.h"
 #include "TimeManager.h"
+
+//working modes of the display
+enum class EWorkingMode {
+  eNormal = 0, //display time
+  eIpDisplay,
+  eLampTesting
+};
 
 //DNSServer dnsServer;
 AsyncWebServer server(80);
 NixieController<ENumberOfLamps::eFour, 8> nc;
 TimeManager timeMan("pool.ntp.org");
 BrightnessConfig bc;
+EWorkingMode clkMode{EWorkingMode::eNormal};
 
 void every1000msTask(void* param) {
   while (true) {
-
+    nc.setBrightness(bc);
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
-
 void every10msTask(void* param) {
+  uint64_t ipDisplayTimeout = 10000000;
+  auto startTime = esp_timer_get_time();
   while (true) {
 
-    nc.displayTime(timeMan.getTime()); //nixie drivers will update only when time is changed
+    switch (clkMode) {
+      case EWorkingMode::eNormal:
+        //update time:
+        //nixie drivers will update only when time is changed
+        nc.displayTime(timeMan.getTime());
 
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+        //toggle neon tube every 500ms:
+        nc.setNeonTubes(timeMan.getMs() < 500);
+        
+        break;
+      case EWorkingMode::eIpDisplay:
+        //WiFi connection timeout:
+        if(esp_timer_get_time()-startTime>ipDisplayTimeout)
+          clkMode=EWorkingMode::eNormal;
+
+        //display WiFi, NixieController will cycle numbers internally
+        if(nc.displayIp(WiFiManager::GetIp()))
+          clkMode=EWorkingMode::eNormal; //done, we go to time display
+        vTaskDelay(990 / portTICK_PERIOD_MS); // here we go slower, no need to rush
+        break;
+      case EWorkingMode::eLampTesting:
+        clkMode=EWorkingMode::eNormal; //fallback to default
+        break;
+
+    }
+
+  vTaskDelay(10 / portTICK_PERIOD_MS);
+
   }
 }
 
@@ -51,7 +83,7 @@ void setup() {
 
 
   //everything else goes to captive portal:
-  server.addHandler(new CaptiveRequestHandler("/www/wifiscan.html")).setFilter(ON_AP_FILTER);  //only when requested from AP
+  server.addHandler(new CaptiveRequestHandler("/www/index.html")).setFilter(ON_AP_FILTER);  //only when requested from AP
   server.begin();
 
   //spawn threads:
