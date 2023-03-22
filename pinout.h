@@ -7,13 +7,13 @@
 
 //for TPICB595:
 #define TPIC_MOSI 23
-#define TPIC_CLK 18
-#define TPIC_LATCH 15
-#define TPIC_CLR 16
-#define TPIC_G 17
+#define TPIC_CLK 17
+#define TPIC_LATCH 19
+#define TPIC_CLR 17
+#define TPIC_G 16
 
-#define R_PHOTO 33
+#define R_PHOTO 35
 
-#define DIMMING 14
+#define DIMMING 5
 
 #endif //PINOUT_H
