@@ -12,8 +12,18 @@
 #define TPIC_CLR 17
 #define TPIC_G 16
 
+// photoresistor:
 #define R_PHOTO 35
 
+//anode PWM:
 #define DIMMING 5
+
+//buttons:
+#define BUTTON_1 14
+#define BUTTON_2 27
+#define BUTTON_3 26
+#define BUTTON_4 25
+
+
 
 #endif //PINOUT_H

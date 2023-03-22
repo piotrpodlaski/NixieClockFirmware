@@ -6,7 +6,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "WiFiManager.h"
-#include "BrightnessConfig.h"
+#include "CommonStructs.h"
 
 class ScanRequestHandler : public AsyncWebHandler {
   private:

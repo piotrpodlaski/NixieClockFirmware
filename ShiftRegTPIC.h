@@ -38,6 +38,10 @@ class ShiftRegTPIC {
       setSingle(globalPin/8, globalPin % 8,val);
     }
 
+    void setOutEnable(bool en = true){
+      digitalWrite(ioG, !en);
+    }
+
 
     void updateRegisters() {
       spi_transaction_t t;
@@ -81,7 +85,7 @@ class ShiftRegTPIC {
       pinMode(ioCLR, OUTPUT);
 
       digitalWrite(ioLATCH, LOW);
-      digitalWrite(ioG, HIGH); //disable out
+      digitalWrite(ioG, LOW); //enable out
       digitalWrite(ioCLR, HIGH);
     }
 

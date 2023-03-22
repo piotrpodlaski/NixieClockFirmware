@@ -4,7 +4,7 @@
 #include "pinout.h"
 #include "mapping.h"
 #include "ShiftRegTPIC.h"
-#include "BrightnessConfig.h"
+#include "CommonStructs.h"
 #include <sys/time.h>
 
 enum class ENumberOfLamps : uint8_t {
@@ -27,16 +27,32 @@ class NixieController {
         nTubes = &mapping::neonTubesSixLamp;
       }
     }
-    void setLamp(uint8_t lampId, uint8_t digit) {
+    void setLamp(uint8_t lampId, int8_t digit, bool update = false) {
       if (lampId >= nLamps) return;
       if (digit > 9) return;
+      clearLamp(lampId);
       if (nxMap->count({lampId, digit})) {
         auto globalPin = nxMap->at({lampId, digit});
         reg.setSingle(globalPin, 1);
       }
+      if (update)
+        reg.updateRegisters();
       Serial.printf("lamp %d set to %d\n", lampId, digit);
-
     }
+
+    void clearLamp(uint8_t lampId, bool update = false) {
+      if (lampId >= nLamps) return;
+      for (uint8_t digit = 0; digit < 10; ++digit) {
+        if (nxMap->count({lampId, digit})) {
+          auto globalPin = nxMap->at({lampId, digit});
+          reg.setSingle(globalPin, 0);
+        }
+      }
+      if (update)
+        reg.updateRegisters();
+    }
+
+
     void displayNumber(int num) {
       if (num == lastDisplayedNumber)
         return;
@@ -63,19 +79,19 @@ class NixieController {
     }
 
     void setBrightness(BrightnessConfig &br) {
-      float bright=0;
+      float bright = 0;
       auto photoRead = analogRead(rPhotoPin);
-      br.photoRead=photoRead;
+      br.photoRead = photoRead;
       if (br.isFixed) {
-        bright=br.fixedBr;
+        bright = br.fixedBr;
       }
       else {
-        float photoBright = 1.*(photoRead-br.photoMin)/(br.photoMax-br.photoMin);
+        float photoBright = 1.*(photoRead - br.photoMin) / (br.photoMax - br.photoMin);
         bright =  br.minBright;
-        bright+= (br.maxBright-br.minBright)*photoBright;
+        bright += (br.maxBright - br.minBright) * photoBright;
       }
       setBrightness(bright);
-      br.currentBr=bright;
+      br.currentBr = bright;
     }
 
     void setBrightness(float br) {
@@ -84,24 +100,29 @@ class NixieController {
       ledcWrite(pwmLedcChannwel, duty);
     }
 
+
+    private:
+
     void initAdcPwm() {
       ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
       ledcAttachPin(pwmPin, pwmLedcChannwel);
       analogReadResolution(nBits);
       analogSetAttenuation(ADC_6db);
     }
-  private:
+
     mapping::nixieMapping_t* nxMap{nullptr};
     mapping::nixieMapping_t* dpMap{nullptr};
     mapping::neonMap_t* nTubes{nullptr};
     ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
     const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
-    uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
-    int lastDisplayedNumber{0};
+                           uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
+                           int lastDisplayedNumber{0};
     const int rPhotoPin{R_PHOTO};
     const int pwmPin{DIMMING};
     const int nBits{12}; //number of bits for PWM and ADC
-    const int pwmLedcChannwel{0};
+    const int pwmLedcChannwel {
+      0
+    };
     const int pwmFreq{100};
     const int pwmMaxVal{(1U << nBits) - 1};
 };

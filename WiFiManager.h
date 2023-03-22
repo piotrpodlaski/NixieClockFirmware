@@ -16,7 +16,7 @@ class WiFiManager {
       WiFi.mode(WIFI_STA);
       //start the scan right away:
       WiFi.scanNetworks(true);
-      xTaskCreate(WiFiManager::WiFiTask, "WiFiManagerTast", 10 * 8192, NULL, 1, NULL);
+      xTaskCreatePinnedToCore(WiFiManager::WiFiTask, "WiFiManagerTask", 10 * 8192, NULL, 1, NULL,0);
       bool validConfig = ReadCredFromFile();
       if (!validConfig) {
         Serial.println(F("No valid WiFi configuration! Starting softAP!"));
