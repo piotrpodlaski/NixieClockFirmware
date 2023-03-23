@@ -27,6 +27,7 @@ class NixieController {
         dpMap = &mapping::nixieDpMappingSixLamp;
         nTubes = &mapping::neonTubesSixLamp;
       }
+      initAdcPwm();
     }
     void setLamp(uint8_t lampId, int8_t digit, bool update = false) {
       if (lampId >= nLamps) return;
@@ -169,9 +170,7 @@ class NixieController {
     const int rPhotoPin{R_PHOTO};
     const int pwmPin{DIMMING};
     const int nBits{12}; //number of bits for PWM and ADC
-    const int pwmLedcChannwel {
-      0
-    };
+    const int pwmLedcChannwel {0};
     const int pwmFreq{100};
     const int pwmMaxVal{(1U << nBits) - 1};
 };

@@ -54,7 +54,7 @@ void every10msTask(void* param) {
 }
 
 
-
+const int ledPin = 5;  // 16 corresponds to GPIO16
 
 
 void setup() {
@@ -78,9 +78,10 @@ void setup() {
   server.begin();
 
   //spawn threads:
-  //xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
 }
 
 void loop() {
+
 }
