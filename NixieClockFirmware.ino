@@ -3,10 +3,14 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include "WebHandlers.h"
+
+//uncomment this to print nice-ish digits to serial
+#define PRINT_LAMPS_TO_SERIAL
+
 #include "NixieController.h"
 #include "TimeManager.h"
 
-//DNSServer dnsServer;
+
 AsyncWebServer server(80);
 NixieController<ENumberOfLamps::eFour, 8> nc;
 TimeManager timeMan("pool.ntp.org");
@@ -23,7 +27,6 @@ void every10msTask(void* param) {
   auto startTime = esp_timer_get_time();
   bool timeout=false;
 
-  //wait for IP:
   while(WiFiManager::GetIp()==IPAddress(0,0,0,0)){
     if(esp_timer_get_time() - startTime > ipDisplayTimeout){
       timeout = true;
@@ -75,7 +78,7 @@ void setup() {
   server.begin();
 
   //spawn threads:
-  xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
+  //xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
 }
 

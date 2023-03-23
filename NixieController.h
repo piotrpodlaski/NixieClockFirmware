@@ -38,7 +38,7 @@ class NixieController {
       }
       if (update)
         reg.updateRegisters();
-      Serial.printf("lamp %d set to %d\n", lampId, digit);
+      //Serial.printf("lamp %d set to %d\n", lampId, digit);
     }
 
     void clearLamp(uint8_t lampId, bool update = false) {
@@ -57,14 +57,21 @@ class NixieController {
     void displayNumber(int num) {
       if (num == lastDisplayedNumber)
         return;
+
+      int digits[nLamps];
       reg.zeroData();
       for (unsigned int i = nLamps; i > 0; i--) {
         uint8_t digit = static_cast<int>(num / pow(10, i - 1)) % 10;
         uint8_t lamp = nLamps - i;
+        digits[lamp]=digit;
         setLamp(lamp, digit);
       }
       reg.updateRegisters();
       lastDisplayedNumber = num;
+      #ifdef PRINT_LAMPS_TO_SERIAL
+        printNiceNumber(digits);
+      #endif //PRINT_LAMPS_TO_SERIAL
+      
     }
 
     void displayTime(const tm &t) {
@@ -112,45 +119,61 @@ class NixieController {
 
     void displayIp(IPAddress ip) {
       if (nLampsEnum == ENumberOfLamps::eFour) {
-        for(int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
+          Serial.println(ip[i]);
           displayNumber(ip[i]);
-          vTaskDelay(2000 / portTICK_PERIOD_MS);
+          vTaskDelay(3000 / portTICK_PERIOD_MS);
         }
-      } 
+      }
       else if (nLampsEnum == ENumberOfLamps::eSix) {
-        for(int i=0;i<2;i++){
-          int num = ip[2*i]+1000*ip[2*i+1];
+        for (int i = 0; i < 2; i++) {
+          int num = ip[2 * i+1] + 1000 * ip[2 * i ];
           displayNumber(num);
-          vTaskDelay(2000 / portTICK_PERIOD_MS);
+          vTaskDelay(5000 / portTICK_PERIOD_MS);
         }
       }
+    }
+
+    void printNiceNumber(int* digits){
+      if(nLampsEnum == ENumberOfLamps::eFour){
+        Serial.println("\n ___   ___     ___   ___ ");
+        Serial.println("/   \\ /   \\   /   \\ /   \\");
+        Serial.printf("| %d | | %d |   | %d | | %d |\n",digits[0],digits[1],digits[2],digits[3]);
+        Serial.println("\\___/ \\___/   \\___/ \\___/");
       }
-
-private:
-
-      void initAdcPwm() {
-        ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
-        ledcAttachPin(pwmPin, pwmLedcChannwel);
-        analogReadResolution(nBits);
-        analogSetAttenuation(ADC_6db);
+      else {
+        Serial.println("\n ___   ___     ___   ___     ___   ___ ");
+        Serial.println("/   \\ /   \\   /   \\ /   \\   /   \\ /   \\");
+        Serial.printf("| %d | | %d |   | %d | | %d |   | %d | | %d |\n",digits[0],digits[1],digits[2],digits[3],digits[4],digits[5]);
+        Serial.println("\\___/ \\___/   \\___/ \\___/   \\___/ \\___/");
       }
+    }
 
-      mapping::nixieMapping_t* nxMap{nullptr};
-      mapping::nixieMapping_t* dpMap{nullptr};
-      mapping::neonMap_t* nTubes{nullptr};
-      ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
-      const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
-      uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
-      int lastDisplayedNumber{0};
-      bool neonTubeState;
-      const int rPhotoPin{R_PHOTO};
-      const int pwmPin{DIMMING};
-      const int nBits{12}; //number of bits for PWM and ADC
-      const int pwmLedcChannwel {
-        0
-      };
-      const int pwmFreq{100};
-      const int pwmMaxVal{(1U << nBits) - 1};
+  private:
+
+    void initAdcPwm() {
+      ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
+      ledcAttachPin(pwmPin, pwmLedcChannwel);
+      analogReadResolution(nBits);
+      analogSetAttenuation(ADC_6db);
+    }
+
+    mapping::nixieMapping_t* nxMap{nullptr};
+    mapping::nixieMapping_t* dpMap{nullptr};
+    mapping::neonMap_t* nTubes{nullptr};
+    ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
+    const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
+    uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
+    int lastDisplayedNumber{0};
+    bool neonTubeState;
+    const int rPhotoPin{R_PHOTO};
+    const int pwmPin{DIMMING};
+    const int nBits{12}; //number of bits for PWM and ADC
+    const int pwmLedcChannwel {
+      0
     };
+    const int pwmFreq{100};
+    const int pwmMaxVal{(1U << nBits) - 1};
+};
 
 #endif //NIXIE_CONTROLLER_H

@@ -167,7 +167,7 @@ class WiFiManager {
       timeMan=man;
     }
 
-    static IPAddress GetIp(){return {};}
+    static IPAddress GetIp(){return WiFi.localIP();}
 
     static DNSServer dns;
     static const String apSsid;
