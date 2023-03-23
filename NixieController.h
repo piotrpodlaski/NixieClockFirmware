@@ -102,40 +102,55 @@ class NixieController {
     }
 
     void setNeonTubes(bool state) {
-      if (neonTubeState==state) return;
+      if (neonTubeState == state) return;
       for (auto pin : *nTubes) {
         reg.setSingle(pin, state);
       }
-      neonTubeState=state;
+      neonTubeState = state;
       reg.updateRegisters();
     }
 
-    bool displayIp(IPAddress ip) { return false;}
+    void displayIp(IPAddress ip) {
+      if (nLampsEnum == ENumberOfLamps::eFour) {
+        for(int i=0;i<4;i++){
+          displayNumber(ip[i]);
+          vTaskDelay(2000 / portTICK_PERIOD_MS);
+        }
+      } 
+      else if (nLampsEnum == ENumberOfLamps::eSix) {
+        for(int i=0;i<2;i++){
+          int num = ip[2*i]+1000*ip[2*i+1];
+          displayNumber(num);
+          vTaskDelay(2000 / portTICK_PERIOD_MS);
+        }
+      }
+      }
 
+private:
 
-  private:
+      void initAdcPwm() {
+        ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
+        ledcAttachPin(pwmPin, pwmLedcChannwel);
+        analogReadResolution(nBits);
+        analogSetAttenuation(ADC_6db);
+      }
 
-    void initAdcPwm() {
-      ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
-      ledcAttachPin(pwmPin, pwmLedcChannwel);
-      analogReadResolution(nBits);
-      analogSetAttenuation(ADC_6db);
-    }
-
-    mapping::nixieMapping_t* nxMap{nullptr};
-    mapping::nixieMapping_t* dpMap{nullptr};
-    mapping::neonMap_t* nTubes{nullptr};
-    ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
-    const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
-    uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
-    int lastDisplayedNumber{0};
-    bool neonTubeState;
-    const int rPhotoPin{R_PHOTO};
-    const int pwmPin{DIMMING};
-    const int nBits{12}; //number of bits for PWM and ADC
-    const int pwmLedcChannwel{0};
-    const int pwmFreq{100};
-    const int pwmMaxVal{(1U << nBits) - 1};
-};
+      mapping::nixieMapping_t* nxMap{nullptr};
+      mapping::nixieMapping_t* dpMap{nullptr};
+      mapping::neonMap_t* nTubes{nullptr};
+      ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
+      const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
+      uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
+      int lastDisplayedNumber{0};
+      bool neonTubeState;
+      const int rPhotoPin{R_PHOTO};
+      const int pwmPin{DIMMING};
+      const int nBits{12}; //number of bits for PWM and ADC
+      const int pwmLedcChannwel {
+        0
+      };
+      const int pwmFreq{100};
+      const int pwmMaxVal{(1U << nBits) - 1};
+    };
 
 #endif //NIXIE_CONTROLLER_H

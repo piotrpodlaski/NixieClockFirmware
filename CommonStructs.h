@@ -1,5 +1,5 @@
-#ifndef BRIGHTNESS_CONFIG_H
-#define BRIGHTNESS_CONFIG_H
+#ifndef COMMON__STRUCTS_H
+#define COMMON__STRUCTS_H
 
 struct BrightnessConfig {
   float minBright = 0.5;
@@ -12,4 +12,4 @@ struct BrightnessConfig {
   float currentBr = 1;
 };
 
-#endif
+#endif //COMMON__STRUCTS_H
