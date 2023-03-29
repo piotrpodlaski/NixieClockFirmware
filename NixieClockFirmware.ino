@@ -16,6 +16,15 @@ NixieController<ENumberOfLamps::eFour, 8> nc;
 TimeManager timeMan("pool.ntp.org");
 BrightnessConfig bc;
 
+void everyHourTask(void* param){
+  while (true){
+    vTaskDelay(3600*1000 / portTICK_PERIOD_MS);
+    //sync time every hour if connected:
+    if(WiFiManager::GetIp()!=IPAddress(0,0,0,0))
+      timeMan.syncTimeNTP();
+  }
+}
+
 void every1000msTask(void* param) {
   while (true) {
     nc.setBrightness(bc);
@@ -54,9 +63,6 @@ void every10msTask(void* param) {
 }
 
 
-const int ledPin = 5;  // 16 corresponds to GPIO16
-
-
 void setup() {
   SPIFFS.begin();
   Serial.begin(115200);
@@ -78,6 +84,7 @@ void setup() {
   server.begin();
 
   //spawn threads:
+  xTaskCreatePinnedToCore(everyHourTask, "every 1h task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
 }

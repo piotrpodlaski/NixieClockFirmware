@@ -59,8 +59,8 @@ class ShiftRegTPIC {
       spi_bus_config_t buscfg;
       memset(&buscfg, 0, sizeof(spi_bus_config_t));
       buscfg.miso_io_num = -1;
-      buscfg.mosi_io_num = 23;
-      buscfg.sclk_io_num = 18;
+      buscfg.mosi_io_num = ioMOSI;
+      buscfg.sclk_io_num = ioCLK;
       buscfg.quadwp_io_num = -1;
       buscfg.quadhd_io_num = -1;
 
