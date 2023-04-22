@@ -7,7 +7,7 @@
 
 //for TPICB595:
 #define TPIC_MOSI 23
-#define TPIC_CLK 17
+#define TPIC_CLK 18
 #define TPIC_LATCH 19
 #define TPIC_CLR 17
 #define TPIC_G 16

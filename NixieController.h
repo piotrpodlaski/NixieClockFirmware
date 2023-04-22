@@ -79,7 +79,8 @@ class NixieController {
       int number = 0;
       switch (nLampsEnum) {
         case ENumberOfLamps::eFour:
-          number = 100 * t.tm_hour + t.tm_min;
+          //number = 100 * t.tm_hour + t.tm_min;
+          number = 10000 * t.tm_hour + 100 * t.tm_min + t.tm_sec;
           break;
         case ENumberOfLamps::eSix:
           number = 10000 * t.tm_hour + 100 * t.tm_min + t.tm_sec;
@@ -162,7 +163,7 @@ class NixieController {
     mapping::nixieMapping_t* nxMap{nullptr};
     mapping::nixieMapping_t* dpMap{nullptr};
     mapping::neonMap_t* nTubes{nullptr};
-    ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_CLR, TPIC_G};
+    ShiftRegTPIC<nDrivers> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_G, TPIC_CLR};
     const uint8_t nLamps = static_cast<uint8_t>(nLampsEnum);
     uint8_t lamps[static_cast<uint8_t>(nLampsEnum)];
     int lastDisplayedNumber{0};

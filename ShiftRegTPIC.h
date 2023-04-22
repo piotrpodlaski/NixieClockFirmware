@@ -6,7 +6,7 @@
 template<uint8_t numRegs>
 class ShiftRegTPIC {
   public:
-    ShiftRegTPIC(int mosi, int clk, int latch, int g, int clr, int spi_freq_hz = 1000000)
+    ShiftRegTPIC(int mosi, int clk, int latch, int g, int clr, int spi_freq_hz = 20000)
       : ioMOSI{mosi}, ioCLK{clk}, ioLATCH{latch}, ioG{g}, ioCLR{clr}, spi_freq{spi_freq_hz} {
       initSPI();
       initPins();
@@ -15,12 +15,14 @@ class ShiftRegTPIC {
 
     void clearRegisters() {
       digitalWrite(ioCLR, LOW);
+      ets_delay_us(1000000/spi_freq);
       digitalWrite(ioCLR, HIGH);
       latch();
     }
 
     void latch() {
       digitalWrite(ioLATCH, HIGH);
+      ets_delay_us(1000000/spi_freq);
       digitalWrite(ioLATCH, LOW);
     }
 
@@ -29,6 +31,7 @@ class ShiftRegTPIC {
     }
 
     void setSingle(uint8_t chip, uint8_t pin,bool val){
+      pin=7-pin;
       if(chip>=numRegs) return;
       if(pin>=8) return;
       val ? bitSet(digitalValues[chip], pin) : bitClear(digitalValues[chip], pin);

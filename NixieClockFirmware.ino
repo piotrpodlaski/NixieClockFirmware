@@ -62,6 +62,8 @@ void every10msTask(void* param) {
   }
 }
 
+    //ShiftRegTPIC<8> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_G, TPIC_CLR};
+
 
 void setup() {
   SPIFFS.begin();
@@ -87,8 +89,19 @@ void setup() {
   xTaskCreatePinnedToCore(everyHourTask, "every 1h task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
+//  pinMode(DIMMING,OUTPUT);
+//  digitalWrite(DIMMING,1);
 }
 
-void loop() {
+int pin=0;
 
+void loop() {
+  
+//  reg.zeroData();
+//  reg.setSingle(pin,1);
+//  reg.updateRegisters();
+//  Serial.println(pin);
+//  pin++;
+//  if(pin==64) pin=0;
+//  delay(2000);
 }
