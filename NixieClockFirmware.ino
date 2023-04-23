@@ -19,6 +19,7 @@ BrightnessConfig bc;
 void everyHourTask(void* param){
   while (true){
     vTaskDelay(3600*1000 / portTICK_PERIOD_MS);
+    WiFiManager::ReconnectIfNecessary();
     //sync time every hour if connected:
     if(WiFiManager::GetIp()!=IPAddress(0,0,0,0))
       timeMan.syncTimeNTP();

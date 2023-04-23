@@ -16,7 +16,7 @@ class WiFiManager {
       WiFi.mode(WIFI_STA);
       //start the scan right away:
       WiFi.scanNetworks(true);
-      xTaskCreatePinnedToCore(WiFiManager::WiFiTask, "WiFiManagerTask", 10 * 8192, NULL, 1, NULL,0);
+      xTaskCreatePinnedToCore(WiFiManager::WiFiTask, "WiFiManagerTask", 10 * 8192, NULL, 1, NULL, 0);
       bool validConfig = ReadCredFromFile();
       if (!validConfig) {
         Serial.println(F("No valid WiFi configuration! Starting softAP!"));
@@ -51,11 +51,11 @@ class WiFiManager {
     static bool ValidateJson(const JsonVariant& json, std::vector<String> keys, String* msg = nullptr) {
 
       bool isGood = true;
-      for(const auto & key : keys){
-        if(!json.containsKey(key)){
-          isGood=false;
-          if(msg)
-            *msg+=" "+key;
+      for (const auto & key : keys) {
+        if (!json.containsKey(key)) {
+          isGood = false;
+          if (msg)
+            *msg += " " + key;
         }
       }
       return isGood;
@@ -85,6 +85,8 @@ class WiFiManager {
       Serial.print("NixieClock is available at ");
       Serial.println(WiFi.softAPIP());
       sApActive = true;
+
+      aApCloseRequestTime_us = esp_timer_get_time(); //start AP with limited lifetime (it draws a lot of power...)
     }
 
     static void StopAP() {
@@ -131,12 +133,13 @@ class WiFiManager {
           if (cnt < connTimeout) {
             Serial.print("\nSuccessfully connected! IP address: ");
             Serial.println(WiFi.localIP());
-            if (sApActive) {
-              Serial.printf("AP will stop in %.1f seconds\n", aApLifetme_us / (1e6));
-              aApCloseRequestTime_us = esp_timer_get_time();
-            }
+            //lifetime of AP is limited, following code block not needed anymore
+//            if (sApActive) {
+//              Serial.printf("AP will stop in %.1f seconds\n", aApLifetme_us / (1e6));
+//              aApCloseRequestTime_us = esp_timer_get_time();
+//            }
             //we have access to WiFi! sync ntp!
-            if(timeMan)
+            if (timeMan)
               timeMan->syncTimeNTP();
           }
 
@@ -163,15 +166,34 @@ class WiFiManager {
       return std::max(lt / 1000, 0LL);
     }
 
-    static void SetTimeManagerPointer(TimeManager* man){
-      timeMan=man;
+    static void SetTimeManagerPointer(TimeManager* man) {
+      timeMan = man;
     }
 
-    static IPAddress GetIp(){return WiFi.localIP();}
+    static void ReconnectIfNecessary() {
+      if (WiFi.status() != WL_CONNECTED) {
+        Serial.printf("Attempt to reconnect to \'%s\' network...\n", cred.ssid.c_str());
+        WiFi.reconnect();
+        int cnt = 0;
+        while (WiFi.status() != WL_CONNECTED) {
+          vTaskDelay(500 / portTICK_PERIOD_MS);
+          Serial.print(".");
+          if (++cnt == connTimeout) {
+            Serial.println("\nConnection timed out!");
+            break;
+          }
+        }
+      }
+
+    }
+
+    static IPAddress GetIp() {
+      return WiFi.localIP();
+    }
 
     static DNSServer dns;
     static const String apSsid;
-    
+
   private:
     static const String configFile;
     static const unsigned int connTimeout;
@@ -191,7 +213,7 @@ DNSServer WiFiManager::dns;
 bool WiFiManager::startStaReq{false};
 WiFiManager::WiFiCred WiFiManager::cred{};
 bool WiFiManager::sApActive{false};
-const uint64_t WiFiManager::aApLifetme_us{60000000};
+const uint64_t WiFiManager::aApLifetme_us{60000000 * 5};
 uint64_t WiFiManager::aApCloseRequestTime_us{0};
 TimeManager* WiFiManager::timeMan{nullptr};
 

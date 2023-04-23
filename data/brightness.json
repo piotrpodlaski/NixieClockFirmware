@@ -4,5 +4,5 @@
 	"photoMin": 1000,
 	"photoMax": 4095,
 	"isFixed": true,
-	"fixedBr": 1
+	"fixedBr": 0.2
 }

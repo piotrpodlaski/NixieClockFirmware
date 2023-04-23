@@ -49,20 +49,11 @@ class TimeManager {
 
     void syncTimeNTP() {
       struct tm timeinfo;
-//      timeinfo.tm_year = 2000-1900;
-//      time_t tNow = mktime(&timeinfo);
-//      struct timeval now = { .tv_sec = tNow };
-//      settimeofday(&now, NULL);   
       Serial.println("Updating time from NTP server...");
       configTime(0, 0, ntpServer.c_str());
       //wait 5 seconds for the sync
       vTaskDelay(5000 / portTICK_PERIOD_MS);
-      if(!getLocalTime(&timeinfo)){
-        Serial.println("  Failed to obtain time");
-        return;
-      }
-      
-      Serial.println("  Got the time from NTP!");
+      getLocalTime(&timeinfo);
       
       setenv("TZ", timezone.c_str(), 1);
       Serial.println(printLocalTime());
