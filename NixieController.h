@@ -79,8 +79,7 @@ class NixieController {
       int number = 0;
       switch (nLampsEnum) {
         case ENumberOfLamps::eFour:
-          //number = 100 * t.tm_hour + t.tm_min;
-          number = 10000 * t.tm_hour + 100 * t.tm_min + t.tm_sec;
+          number = 100 * t.tm_hour + t.tm_min;
           break;
         case ENumberOfLamps::eSix:
           number = 10000 * t.tm_hour + 100 * t.tm_min + t.tm_sec;

@@ -5,7 +5,7 @@
 #include "WebHandlers.h"
 
 //uncomment this to print nice-ish digits to serial
-#define PRINT_LAMPS_TO_SERIAL
+//#define PRINT_LAMPS_TO_SERIAL
 
 #include "NixieController.h"
 #include "TimeManager.h"
@@ -68,6 +68,7 @@ void every10msTask(void* param) {
 void setup() {
   SPIFFS.begin();
   Serial.begin(115200);
+  Wire.begin();
 
   timeMan.init();
   WiFiManager::SetTimeManagerPointer(&timeMan);
