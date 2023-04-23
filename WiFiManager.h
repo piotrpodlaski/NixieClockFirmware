@@ -93,7 +93,17 @@ class WiFiManager {
       Serial.println("Switching softAP OFF...");
       WiFi.softAPdisconnect(true);
       sApActive = false;
-      WiFi.mode(WIFI_STA);
+
+      //stay in station mode if connected, turn wifi off if not.
+      if(GetIp()!=IPAddress(0,0,0,0)) {
+        WiFi.mode(WIFI_STA);
+      }
+      else{
+        Serial.println("Switching WiFi completely OFF!");
+        WiFi.mode(WIFI_OFF);
+      }
+      
+      
     }
 
     bool startSta() {
@@ -173,13 +183,15 @@ class WiFiManager {
     static void ReconnectIfNecessary() {
       if (WiFi.status() != WL_CONNECTED) {
         Serial.printf("Attempt to reconnect to \'%s\' network...\n", cred.ssid.c_str());
-        WiFi.reconnect();
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(cred.ssid.c_str(), cred.pass.c_str());
         int cnt = 0;
         while (WiFi.status() != WL_CONNECTED) {
           vTaskDelay(500 / portTICK_PERIOD_MS);
           Serial.print(".");
           if (++cnt == connTimeout) {
-            Serial.println("\nConnection timed out!");
+            Serial.println("\nConnection timed out! Switching WiFi OFF.");
+            WiFi.mode(WIFI_OFF);
             break;
           }
         }
