@@ -40,11 +40,7 @@ class TimeManager {
       tm.tm_hour = Clock.getHour(h12Flag, pmFlag);
       tm.tm_min = Clock.getMinute();
       tm.tm_sec = Clock.getSecond();
-      time_t tNow = mktime(&tm);
-      Serial.printf( "Setting time: %s", asctime(&tm));
-      struct timeval now = { .tv_sec = tNow };
-      settimeofday(&now, NULL);
-      setenv("TZ", timezone.c_str(), 1);
+      setTime(tm);
     }
 
     void syncTimeNTP() {
@@ -58,6 +54,9 @@ class TimeManager {
       setenv("TZ", timezone.c_str(), 1);
       Serial.println(printLocalTime());
       setTimeRTC(timeinfo); //update RTC each time we get time from the internet
+      Serial.print("RTC temperature: ");
+      Serial.println(getTempRTC());
+      
     }
 
     void setTimeRTC(const tm &tmnow) {
@@ -83,6 +82,44 @@ class TimeManager {
     void initRTC() {
 
     }
+
+    float getTempRTC() {
+      return Clock.getTemperature();
+    }
+
+    void incrementH() {
+      auto t = getTime();
+      if( t.tm_hour==23)
+        t.tm_hour=0;
+      else
+        t.tm_hour++;
+
+      setTime(t); //sets local time
+      setTimeRTC(t); //sets RTC time
+    }
+
+    void incrementM() {
+      auto t = getTime();
+      if( t.tm_min==59)
+        t.tm_min=0;
+      else
+        t.tm_min++;
+
+      setTime(t); //sets local time
+      setTimeRTC(t); //sets RTC time
+    }
+
+  private:
+
+    void setTime(tm tmnow) {
+      time_t tNow = mktime(&tmnow);
+      Serial.printf( "Setting time: %s", asctime(&tmnow));
+      struct timeval now = { .tv_sec = tNow };
+      settimeofday(&now, NULL);
+      setenv("TZ", timezone.c_str(), 1);
+    }
+
+    
     const String timezone{"CET-1CEST,M3.5.0,M10.5.0/3"};
     const String ntpServer;
     RTClib myRTC;

@@ -95,11 +95,14 @@ class NixieController {
         bright = br.fixedBr;
       }
       else {
-        float photoBright = 1.*(photoRead - br.photoMin) / (br.photoMax - br.photoMin);
+        float photoBright = 1.*(br.photoMax - photoRead) / (br.photoMax - br.photoMin);
         bright =  br.minBright;
         bright += (br.maxBright - br.minBright) * photoBright;
       }
       setBrightness(bright);
+//      Serial.print(photoRead);
+//      Serial.print(" ");
+//      Serial.println(bright);
       br.currentBr = bright;
     }
 
@@ -156,7 +159,7 @@ class NixieController {
       ledcSetup(pwmLedcChannwel, pwmFreq, nBits);
       ledcAttachPin(pwmPin, pwmLedcChannwel);
       analogReadResolution(nBits);
-      analogSetAttenuation(ADC_6db);
+      analogSetAttenuation(ADC_11db);
     }
 
     mapping::nixieMapping_t* nxMap{nullptr};

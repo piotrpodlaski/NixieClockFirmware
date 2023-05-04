@@ -15,6 +15,24 @@ AsyncWebServer server(80);
 NixieController<ENumberOfLamps::eFour, 8> nc;
 TimeManager timeMan("pool.ntp.org");
 BrightnessConfig bc;
+int touchThreshold = 15;
+
+
+struct touchConfig {
+  bool touchActive = false;
+  bool lastTouchActive = false;
+  bool testingLower = true;
+  int threshold = 15;
+};
+
+touchConfig tcH, tcM;
+
+void touchISR(void* param) {
+  auto pressed = reinterpret_cast<bool*>(param);
+  *pressed = true;
+}
+
+
 
 void everyHourTask(void* param){
   while (true){
@@ -26,16 +44,18 @@ void everyHourTask(void* param){
   }
 }
 
-void every1000msTask(void* param) {
+void every100msTask(void* param) {
   while (true) {
     nc.setBrightness(bc);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
 void every10msTask(void* param) {
   uint64_t ipDisplayTimeout = 10000000;
   auto startTime = esp_timer_get_time();
   bool timeout=false;
+
+  nc.displayNumber(2137);//hehe
 
   while(WiFiManager::GetIp()==IPAddress(0,0,0,0)){
     if(esp_timer_get_time() - startTime > ipDisplayTimeout){
@@ -63,8 +83,32 @@ void every10msTask(void* param) {
   }
 }
 
-    //ShiftRegTPIC<8> reg{TPIC_MOSI, TPIC_CLK, TPIC_LATCH, TPIC_G, TPIC_CLR};
+void touchTask(void* param) {
+  bool stateH = false;
+  bool stateM = false;
+  while (true) {
+    auto tH = touchRead(TOUCH_HOUR);
+    auto tM = touchRead(TOUCH_MINUTE);
+    if(stateH){
+      if(tH>touchThreshold)
+        stateH=false;
+    } else if(tH<touchThreshold) {
+      stateH=true;
+      Serial.println("hours pressed!");
+      timeMan.incrementH();
+    }
+    if(stateM){
+      if(tM>touchThreshold)
+        stateM=false;
+    } else if(tM<touchThreshold) {
+      stateM=true;
+      Serial.println("hours pressed!");
+      timeMan.incrementM();
+    }
 
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+  }
+}
 
 void setup() {
   SPIFFS.begin();
@@ -81,6 +125,7 @@ void setup() {
   server.addHandler(new StoreWifiRequestHandler("/rest/wifi_cred"));
   server.addHandler(new WiFiStatusRequestHandler("/rest/wifi_status"));
   server.addHandler(new BrightRequestHandler("/rest/bright", bc));
+  server.addHandler(new TemperatureRequestHandler("/rest/temperature", &timeMan));
 
 
   //everything else goes to captive portal:
@@ -89,21 +134,17 @@ void setup() {
 
   //spawn threads:
   xTaskCreatePinnedToCore(everyHourTask, "every 1h task", 8192, NULL, 1, NULL, 0);
-  xTaskCreatePinnedToCore(every1000msTask, "every 1000ms task", 8192, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(every100msTask, "every 100ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(touchTask, "touch task", 8192, NULL, 1, NULL, 0);
 //  pinMode(DIMMING,OUTPUT);
 //  digitalWrite(DIMMING,1);
 }
 
-int pin=0;
-
+//int pin=0;
+//float bright=1.;
+//float step=0.01;
 void loop() {
-  
-//  reg.zeroData();
-//  reg.setSingle(pin,1);
-//  reg.updateRegisters();
-//  Serial.println(pin);
-//  pin++;
-//  if(pin==64) pin=0;
-//  delay(2000);
+//  Serial.println(timeMan.getTempRTC());
+//  delay(1000);
 }

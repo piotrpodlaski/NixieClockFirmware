@@ -7,6 +7,7 @@
 #include <ESPAsyncWebServer.h>
 #include "WiFiManager.h"
 #include "CommonStructs.h"
+#include "TimeManager.h"
 
 class ScanRequestHandler : public AsyncWebHandler {
   private:
@@ -241,6 +242,34 @@ class BrightRequestHandler : public AsyncWebHandler {
     BrightnessConfig& bc;
     const std::vector<String> neededKeys = {"minBright", "maxBright", "photoMin", "photoMax", "isFixed", "fixedBr"};
     String configFile{"/brightness.json"};
+};
+
+class TemperatureRequestHandler : public AsyncWebHandler {
+  private:
+    const String _uri;
+    TimeManager *timeMan{nullptr};
+  public:
+    TemperatureRequestHandler(const String &uri, TimeManager* man)
+      : _uri{ uri }, timeMan{man} {}
+    TemperatureRequestHandler() = delete;
+    virtual ~TemperatureRequestHandler() {}
+
+    bool canHandle(AsyncWebServerRequest *request) {
+      if (request->url() != _uri && !request->url().startsWith(_uri + "/"))
+        return false;
+      if (request->method() != HTTP_GET)
+        return false;
+      return true;
+    }
+
+    void handleRequest(AsyncWebServerRequest *request) {
+      DynamicJsonDocument doc(1000);
+      auto arr = doc.to<JsonVariant>();
+      arr["temperature"] = timeMan->getTempRTC();
+      auto response = request->beginResponseStream("application/json");
+      serializeJson(arr, *response);
+      request->send(response);
+    }
 };
 
 #endif //WEB_HANDLERS_H

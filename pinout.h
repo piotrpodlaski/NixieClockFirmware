@@ -24,6 +24,10 @@
 #define BUTTON_3 26
 #define BUTTON_4 25
 
+//touch input:
+#define TOUCH_HOUR 14
+#define TOUCH_MINUTE 27
+
 
 
 #endif //PINOUT_H
