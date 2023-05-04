@@ -19,6 +19,7 @@ After opening `NixieClockFirmware.ino` execute `Sketch`&rarr;`Include Library`&r
 ###  Libraries listed in Arduino registry:
 Run `Tools`&rarr;`ESP32 Sketch Data Upload` and install:
 * `ArduinoJson` by Benoît Blanchon
+* `DS3231` by Andrew Wickert
 
 
 # Build and Run
