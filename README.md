@@ -25,3 +25,15 @@ Run `Tools`&rarr;`ESP32 Sketch Data Upload` and install:
 Before build, select correct board: `Tools`&rarr;`Board`&rarr;`ESP32 Arduino`&rarr;`ESP32DevModule`
 
 After flashing firmware to the board run `Tools`&rarr;`ESP32 Sketch Data Upload` to upload WEB interface data to the board
+
+# Changing brightness settings
+
+When the clock is connected to your local WiFi network you can change automatic brightness controll settings by editing [brightness.json](data/brightness.json) file.
+
+After you are done changing the settings an the file is saved run:
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d @data/brightness.json NIXIE_IP/rest/bright
+```
+
+where you replace `NIXIE_IP` by the IP address of your clock
