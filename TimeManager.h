@@ -29,7 +29,6 @@ class TimeManager {
     }
 
     void syncTimeRTC() {
-      //PLACEHOLDER:
       bool century = false;
       bool h12Flag;
       bool pmFlag;
@@ -54,8 +53,6 @@ class TimeManager {
       setenv("TZ", timezone.c_str(), 1);
       Serial.println(printLocalTime());
       setTimeRTC(timeinfo); //update RTC each time we get time from the internet
-      Serial.print("RTC temperature: ");
-      Serial.println(getTempRTC());
       
     }
 

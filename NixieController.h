@@ -100,9 +100,6 @@ class NixieController {
         bright += (br.maxBright - br.minBright) * photoBright;
       }
       setBrightness(bright);
-//      Serial.print(photoRead);
-//      Serial.print(" ");
-//      Serial.println(bright);
       br.currentBr = bright;
     }
 

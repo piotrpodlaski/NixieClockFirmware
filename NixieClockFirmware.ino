@@ -3,12 +3,11 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include "WebHandlers.h"
+#include "NixieController.h"
+#include "TimeManager.h"
 
 //uncomment this to print nice-ish digits to serial
 //#define PRINT_LAMPS_TO_SERIAL
-
-#include "NixieController.h"
-#include "TimeManager.h"
 
 
 AsyncWebServer server(80);
@@ -16,23 +15,6 @@ NixieController<ENumberOfLamps::eFour, 8> nc;
 TimeManager timeMan("pool.ntp.org");
 BrightnessConfig bc;
 int touchThreshold = 15;
-
-
-struct touchConfig {
-  bool touchActive = false;
-  bool lastTouchActive = false;
-  bool testingLower = true;
-  int threshold = 15;
-};
-
-touchConfig tcH, tcM;
-
-void touchISR(void* param) {
-  auto pressed = reinterpret_cast<bool*>(param);
-  *pressed = true;
-}
-
-
 
 void everyHourTask(void* param){
   while (true){
@@ -137,14 +119,9 @@ void setup() {
   xTaskCreatePinnedToCore(every100msTask, "every 100ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(every10msTask, "every 10ms task", 8192, NULL, 1, NULL, 0);
   xTaskCreatePinnedToCore(touchTask, "touch task", 8192, NULL, 1, NULL, 0);
-//  pinMode(DIMMING,OUTPUT);
-//  digitalWrite(DIMMING,1);
 }
 
-//int pin=0;
-//float bright=1.;
-//float step=0.01;
+
 void loop() {
-//  Serial.println(timeMan.getTempRTC());
-//  delay(1000);
+
 }
